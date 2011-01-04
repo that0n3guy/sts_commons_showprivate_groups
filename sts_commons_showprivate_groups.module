@@ -3,6 +3,54 @@
 include_once('sts_commons_showprivate_groups.features.inc');
 
 /**
+ * Implementation of hook_views_api().
+ */
+function sts_commons_showprivate_groups_views_api() {
+  return array(
+    'api' => 2,
+  );
+}
+
+
+function og_private_subscribe_link($node) {
+  if ($node->og_selective == OG_MODERATED) {
+    $txt = t('Request membership');
+  }
+  elseif ($node->og_selective == OG_OPEN) {
+    $txt = t('Join');
+  }
+  if(isset($txt))
+    return l($txt, "og/privatesubscribe/$node->nid", array('attributes' => array('rel' => 'nofollow'), 'query' => drupal_get_destination()));
+}
+
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function sts_commons_showprivate_groups_menu() {
+  // Anon users should be able to get to the join page
+  $items['og/privatesubscribe/%node'] = array(
+    'type' => MENU_CALLBACK,
+    'file path' => drupal_get_path('module', 'og'),
+    'file' =>  'og.pages.inc',
+    'page callback' => 'og_subscribe',
+    'page arguments' => array(2),
+    'access callback' => 'sts_commons_showprivate_groups_menuaccess',
+    'access arguments' => array(2),
+    'title' => 'Join group'
+  );
+  return $items;
+}
+
+function sts_commons_showprivate_groups_menuaccess($node) {
+  if ($node->field_group_private_frontpage[0]['value'] == 'yes')
+    return TRUE;
+  return FALSE;
+}
+
+
+/**
 * Implements hook_views_pre_render().
 */
 function sts_commons_showprivate_groups_views_pre_render(&$view) {
@@ -27,7 +75,7 @@ function sts_commons_showprivate_groups_views_pre_render(&$view) {
 }
 
 
-// function sts_commons_mods_menu() {
+// function sts_commons_showprivate_groups_menu() {
   // $items = array();
 
 	 // $items['node/%node/content/forums/this'] = array(
@@ -35,7 +83,7 @@ function sts_commons_showprivate_groups_views_pre_render(&$view) {
     // 'description' => 'Forum for this Group.', 
 		// //'page callback' => 'drupal_get_form',
 		// //'page arguments' =>  array('sts_commons_ogforum'),
-		// //'access callback' => 'sts_commons_mods_forum_access',
+		// //'access callback' => 'sts_commons_showprivate_groups_forum_access',
     // 'access arguments' => array(1), 
     // 'type' => MENU_DEFAULT_LOCAL_TASK,
 		// 'weight' => 0,
@@ -45,7 +93,7 @@ function sts_commons_showprivate_groups_views_pre_render(&$view) {
     // 'description' => 'Forum for this Group.', 
 		// 'page callback' => 'drupal_get_form',
 		// 'page arguments' =>  array('sts_commons_ogforum'),
-		// 'access callback' => 'sts_commons_mods_forum_access',
+		// 'access callback' => 'sts_commons_showprivate_groups_forum_access',
     // 'access arguments' => array(1), 
     // 'type' => MENU_LOCAL_TASK,
 		// 'weight' => 0,
@@ -56,13 +104,13 @@ function sts_commons_showprivate_groups_views_pre_render(&$view) {
 // /**
  // * Implementation of hook_menu_alter().
  // */
-// function sts_commons_mods_menu_alter(&$callbacks) {
-  // $callbacks['forum']['access callback'] = 'sts_commons_mods_access_forum_page';
+// function sts_commons_showprivate_groups_menu_alter(&$callbacks) {
+  // $callbacks['forum']['access callback'] = 'sts_commons_showprivate_groups_access_forum_page';
   // $callbacks['forum']['access arguments'] = array(1);
   // //$callbacks['forum']['page callback'] = 'og_forum_topic_redirect';
 // }
 
-// function sts_commons_mods_access_forum_page($tid = 0) {
+// function sts_commons_showprivate_groups_access_forum_page($tid = 0) {
 // //return FALSE;
 
 // }
@@ -71,7 +119,7 @@ function sts_commons_showprivate_groups_views_pre_render(&$view) {
 /**
 * Access callback for node/%node/edit/attributes.
 */
-// function sts_commons_mods_forum_access($node) {
+// function sts_commons_showprivate_groups_forum_access($node) {
   // if ($node->type == 'group' && module_exists('forum') && module_exists('advanced_forum')) {
     // return TRUE;
   // }
@@ -80,7 +128,7 @@ function sts_commons_showprivate_groups_views_pre_render(&$view) {
 
 // function sts_commons_ogforum() {
     // $group = og_get_group_context();
-		// $sql = "SELECT fctid FROM {sts_commons_mods}
+		// $sql = "SELECT fctid FROM {sts_commons_showprivate_groups}
 						// WHERE gid = %d";
 		// $result = db_fetch_object(db_query($sql, $group->nid)); 
 
