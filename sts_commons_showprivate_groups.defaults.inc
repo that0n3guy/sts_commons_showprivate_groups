@@ -11,17 +11,18 @@ function _sts_commons_showprivate_groups_content_default_fields() {
     'field_name' => 'field_group_private_frontpage',
     'type_name' => 'group',
     'display_settings' => array(
+      'weight' => '2',
+      'parent' => '',
       'label' => array(
         'format' => 'above',
-        'exclude' => 0,
       ),
       'teaser' => array(
         'format' => 'default',
-        'exclude' => 0,
+        'exclude' => 1,
       ),
       'full' => array(
         'format' => 'default',
-        'exclude' => 0,
+        'exclude' => 1,
       ),
       '4' => array(
         'format' => 'default',
