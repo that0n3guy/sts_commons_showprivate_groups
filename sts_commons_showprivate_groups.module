@@ -1,0 +1,107 @@
+<?php
+
+include_once('sts_commons_showprivate_groups.features.inc');
+
+/**
+* Implements hook_views_pre_render().
+*/
+function sts_commons_showprivate_groups_views_pre_render(&$view) {
+//dsm($view);
+	//allow users to see the private groups even if they are not a member
+  // For myviewname, bypass node access checks.
+  if ($view->name == 'og_all_stsclone' && $view->current_display == 'attachment_1') {// && empty($view->result)) {
+		// This does the views token replacements.
+    $replacements = module_invoke_all('views_query_substitutions', $view);
+    $query = str_replace(array_keys($replacements), $replacements, $view->build_info['query']);
+    $args = $view->build_info['query_args'];
+    $offset = $view->pager['current_page'] * $view->pager['items_per_page'] + $view->pager['offset'];
+    // Runs the query a second time.
+    $result = db_query_range($query, $args, $offset, $view->pager['items_per_page']);
+    // Overwrites the default empty result set with the results from our 2nd sql query.
+    $view->result = array();
+    while ($item = db_fetch_object($result)) {
+      $view->result[] = $item;
+    }
+  }
+
+}
+
+
+// function sts_commons_mods_menu() {
+  // $items = array();
+
+	 // $items['node/%node/content/forums/this'] = array(
+    // 'title' => 'Group Forums', 
+    // 'description' => 'Forum for this Group.', 
+		// //'page callback' => 'drupal_get_form',
+		// //'page arguments' =>  array('sts_commons_ogforum'),
+		// //'access callback' => 'sts_commons_mods_forum_access',
+    // 'access arguments' => array(1), 
+    // 'type' => MENU_DEFAULT_LOCAL_TASK,
+		// 'weight' => 0,
+  // );
+  // $items['node/%node/content/forums/view'] = array(
+    // 'title' => 'Group Forums', 
+    // 'description' => 'Forum for this Group.', 
+		// 'page callback' => 'drupal_get_form',
+		// 'page arguments' =>  array('sts_commons_ogforum'),
+		// 'access callback' => 'sts_commons_mods_forum_access',
+    // 'access arguments' => array(1), 
+    // 'type' => MENU_LOCAL_TASK,
+		// 'weight' => 0,
+  // );
+  // return $items;
+// }
+
+// /**
+ // * Implementation of hook_menu_alter().
+ // */
+// function sts_commons_mods_menu_alter(&$callbacks) {
+  // $callbacks['forum']['access callback'] = 'sts_commons_mods_access_forum_page';
+  // $callbacks['forum']['access arguments'] = array(1);
+  // //$callbacks['forum']['page callback'] = 'og_forum_topic_redirect';
+// }
+
+// function sts_commons_mods_access_forum_page($tid = 0) {
+// //return FALSE;
+
+// }
+
+
+/**
+* Access callback for node/%node/edit/attributes.
+*/
+// function sts_commons_mods_forum_access($node) {
+  // if ($node->type == 'group' && module_exists('forum') && module_exists('advanced_forum')) {
+    // return TRUE;
+  // }
+  // return FALSE; // TRUE or you can user user_access() permissions as well
+// } 
+
+// function sts_commons_ogforum() {
+    // $group = og_get_group_context();
+		// $sql = "SELECT fctid FROM {sts_commons_mods}
+						// WHERE gid = %d";
+		// $result = db_fetch_object(db_query($sql, $group->nid)); 
+
+		// $form['gforum']['forum'] = array(
+			// '#value' => advanced_forum_page($result->fctid),
+    // );
+		// //Set Correct Title
+		// drupal_set_title(check_plain($group->title . " - Forum"));
+		
+		// // Build Breadcrumbs
+		// $breadcrumb = array();
+		// $breadcrumb[] = l('Home', '<front>');
+		// $breadcrumb[] = l('Groups', 'groups');
+		// $breadcrumb[] = l($group->title, "node/$group->nid"); // Link to current URL
+		// //$breadcrumb[] = l("Group Forum", "node/$group->nid/content/forum"); // Link to current URL
+
+
+		// // Set Breadcrumbs
+		// drupal_set_breadcrumb($breadcrumb);
+
+	// return $form;
+// }
+
+
